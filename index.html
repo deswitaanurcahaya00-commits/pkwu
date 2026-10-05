@@ -88,16 +88,18 @@ const rack=p=>{mk(p,bx(.55,.75,.5),M.rack);mk(p,bx(.02,.72,.48),M.glass,.27,0,0,
 const ac=p=>{mk(p,bx(1.1,.32,.24),M.white);mk(p,bx(1,.02,.08),M.louv,0,-.12,.05);mk(p,sp(.018),M.ledB,.38,0,.125,0)};
 const board=p=>{mk(p,bx(4,1.8,.05),M.bm);dp(mk(p,bx(3.8,1.6,.06),M.bs,0,0,.01,0))};
 const outlet=p=>{mk(p,bx(.2,.12,.05),M.white,0,.15);mk(p,bx(.06,.05,.055),KM.net,-.045,.15,0,0);mk(p,bx(.06,.05,.055),KM.pwr,.045,.15,0,0)};
+const ap=p=>{mk(p,cy(.17,.035),M.white);mk(p,cy(.19,.01),M.louv,0,.022);mk(p,cy(.12,.012),M.louv,0,-.022);mk(p,sp(.014),M.ledB,.1,-.03,0,0)};
 const T={
 panel:{n:'Panel Listrik (MDP)',b:panel,ah:0,y:1.3,s:'Main Distribution Panel\n• MCB utama 40 A / 220 V\n• Lampu: hijau normal, oranye ≥70%, merah trip/off\n• Ketuk panel untuk ON/OFF breaker'},
 desk:{n:'Meja Siswa Ganda',sn:'Meja Siswa',b:desk,ah:.8,lap:2,s:'Node komputasi siswa\n• 2 stasiun siswa\n• 2× laptop Intel Core i5\n• 2 drop Cat6 Gigabit\n• 2 outlet 220V'},
 teacher:{n:'Meja Guru',sn:'Meja Guru',b:teacher,ah:.82,lap:1,s:'Konsol pengajar\n• Laptop Core i7\n• Kontrol Smartboard & HDMI\n• Receiver mic nirkabel'},
 admin:{n:'Cadangan',b:admin,ah:.82,lap:1,s:'Terminal administrator jaringan\n• Laptop + monitor IPS 24"\n• Konsol serial RS232 ke rak 12U\n• Monitor bandwidth & firewall'},
-rack:{n:'Rak Server 12U',sn:'Rak Server',b:rack,ah:0,y:1.4,s:'Enclosure telekomunikasi inti\n• Wallmount 12U pintu kaca\n• 2× switch managed 24 port\n• Patch panel Cat6 48 port\n• Router MikroTik Cloud Core\n• UPS 1000VA online'},
+rack:{n:'Rak Server 12U',sn:'Rak Server',b:rack,ah:0,y:1.4,s:'Enclosure telekomunikasi inti\n• Wallmount 12U pintu kaca\n• 2× TP-Link TL-SG1024D\n• 2× 24-Port Cat6\n• Router MikroTik L009UiGS-RM\n• Patch Cord UTP Cat6 0,5m'},
 ac:{n:'AC Inverter 2HP',sn:'AC',b:ac,ah:0,y:2.6,s:'Sistem pendingin\n• 2HP inverter (18.000 BTU/jam)\n• Filter HEPA anti-bakteri\n• Target suhu 22°C'},
 board:{n:'Smartboard 86"',b:board,ah:0,y:1.8,s:'Display interaktif 4K 86 inci\n• 3840×2160 @ 60Hz\n• HDMI 2.1 ganda, USB-C touch\n• Soundbar 2×20W'},
 chair:{n:'Kursi',sn:'Kursi',b:p=>chair(p,0,0),ah:.45,s:'Kursi siswa\n• Rangka baja, dudukan biru'},
-outlet:{n:'Titik Jaringan & Listrik',sn:'Stopkontak',b:outlet,ah:.15,s:'Wall outlet\n• 1× RJ45 Cat6\n• 1× stopkontak 220V\n• Titik sambung kabel'}};
+outlet:{n:'Titik Jaringan & Listrik',sn:'Stopkontak',b:outlet,ah:.15,s:'Wall outlet\n• 1× RJ45 Cat6\n• 1× stopkontak 220V\n• Titik sambung kabel'},
+ap:{n:'Access Point Ruijie 5 GHz',sn:'Access Point',b:ap,ah:0,y:2.7,s:'Access point dual-band\n• Radio 5 GHz (802.11ac/ax)\n• Daya via PoE dari switch rak\n• Uplink Gigabit ke rak server'}};
 /* ---------- ruangan ---------- */
 let grid;const room=new THREE.Group();sc.add(room);
 const fl=new THREE.Mesh(new THREE.PlaneGeometry(12,8),M.floor);fl.rotation.x=-Math.PI/2;fl.receiveShadow=true;room.add(fl);
@@ -186,7 +188,7 @@ else if(sel.it){const o=sel.it,t=T[o.userData.t];h=`<h2>${t.n}<i>${o.userData.id
 else{const c=sel.cab;h=`<h2>Kabel ${KC[c.k][1]}<i style="color:#${KC[c.k][0].toString(16).padStart(6,0)}">●</i></h2><p class=m>${nm(c.a)}<br>→ ${nm(c.b)}</p>`}
 h+=simHTML();if(mode=='edit'){const o=sel?'':' off';
 h+=`<div class=sec><h3>Objek terpilih</h3><div class=row>${B('rot','',L('rot','Putar'),0,' c'+o)}${B('dup','',L('dup','Gandakan'),0,' c'+(sel&&sel.it?'':' off'))}${B('del','',L('del','Hapus'),0,' c'+o)}</div>${B('snap','',`Snap: ${snap?snap+' m':'mati'}`,0,' c')}</div>
-<div class=sec><h3>Tambah objek</h3><div class=row>${['desk','teacher','chair','rack','ac','outlet'].map(k=>B('add',k,T[k].sn,0,' c')).join('')}</div></div>
+<div class=sec><h3>Tambah objek</h3><div class=row>${['desk','teacher','chair','rack','ac','outlet','ap'].map(k=>B('add',k,T[k].sn,0,' c')).join('')}</div></div>
 <div class=sec><h3>Kabel</h3><div class=row>${Object.keys(KC).map(k=>B('kind',k,`<i class=dot style="background:#${KC[k][0].toString(16).padStart(6,0)}"></i>${KC[k][2]}`,kind==k,' c')).join('')}</div>${B('tool','',L('cab',tool?'Selesai menarik kabel':'Tarik kabel'),tool,' c e')}</div>
 <div class=sec><div class=row style="grid-template-columns:1fr 1fr">${B('reset','','Reset tata letak',0,' c')}${B('copy','','Salin JSON',0,' c')}</div></div>`}
 p.innerHTML=h;coords();tick()}
